@@ -1,16 +1,5 @@
 numpy
-joblib
-threadpoolctl
 scipy
 scikit-learn
-
-pytz
-tzdata
-python-dateutil
 pandas
-
-pyparsing
-cycler
-contourpy
-pillow
 matplotlib

@@ -253,6 +253,7 @@ Project structure:
 ```
 010-Model-Training-with-Github-Actions
 ├── README.md
+├── outputs/
 ├── processed_dataset/
 ├── raw_dataset/
 │   └── weather.csv
@@ -295,7 +296,7 @@ pip install -r requirements.txt
 Before training the model, we must preprocess the dataset. The `preprocess_dataset.py` script contains helper functions to clean and transform the raw data. This script generates the processed dataset (e.g., `weather.csv`) in the `/processed_dataset` directory, which is required by the training script.
 
 ```bash
-python scripts/preprocess_dataset.py
+python3 scripts/preprocess_dataset.py
 ```
 
 This will create the processed dataset file in the `/processed_dataset` directory.
@@ -310,7 +311,7 @@ processed_dataset/
 Once preprocessing is complete and the processed dataset exists, we can train the model using `train.py`. This script loads the processed data, splits it into training and test sets, trains the model, evaluates it, and saves the results.
 
 ```bash
-python scripts/train.py
+python3 scripts/train.py
 ```
 
 Output:
