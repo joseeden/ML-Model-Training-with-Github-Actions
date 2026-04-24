@@ -1,5 +1,5 @@
-./venv
+venv/
 __pycache__
 
-./confusion_matrix.png
-./metrics.json
+confusion_matrix.png
+metrics.json
