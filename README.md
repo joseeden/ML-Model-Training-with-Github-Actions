@@ -1,16 +1,4 @@
----
-title: "Model Training with Github Actions"
-description: "Integrating model training into a CI/CD pipeline using Github Actions."
-tags: 
-- Machine Learning
-- Github Actions
-sidebar_position: 1
-last_update:
-  date: 8/15/2023
----
-
-
-## Overview
+## Model Training with Github Actions
 
 This project demonstrates how to integrate model training into a CI/CD pipeline using GitHub Actions. By automating the training process, we can ensure that every code change is tested and validated before merging.
 
@@ -95,7 +83,7 @@ Finally, the dataset is split into two sets:
 
 The model is trained using the training data. We use a Random Forest model for its accuracy and ability to handle various feature types.
 
-<!-- In the example below, `X` is features and `y` is the target.
+In the example below, `X` is features and `y` is the target.
 
 ```python
 from sklearn.model_selection import train_test_split
@@ -107,14 +95,11 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 model = RandomForestClassifier()
 model.fit(X_train, y_train)
-``` -->
+``` 
 
-:::info 
 
 Random Forest is chosen because it is accurate, handles many features well, and is less likely to overfit.
 
-:::
- 
 ## Evaluating the Model 
 
 To get a comprehensive view of model performance, we report the standard metrics such as accuracy, precision, recall, and F1 score.
