@@ -308,6 +308,9 @@ processed_dataset/
 
 ### Train the Classification Model
 
+> **Note:** Always run the preprocessing step before training. If you skip preprocessing or run training first, the model may fail or use outdated data, and `metrics.json` may not reflect the correct results.
+
+
 Once preprocessing is complete and the processed dataset exists, we can train the model using `train.py`. This script loads the processed data, splits it into training and test sets, trains the model, evaluates it, and saves the results.
 
 ```bash
@@ -330,11 +333,73 @@ Output:
 The script will also generate or update `metrics.json` with the latest evaluation metrics and create a confusion matrix plot (e.g., `confusion_matrix.png`).
 
 ```bash
-/010-Model-Training-with-Github-Actions
-├── README.md
+outputs/
 ├── confusion_matrix.png
-├── metrics.json
+└── metrics.json
 ...
 ```
 
-> **Note:** Always run the preprocessing step before training. If you skip preprocessing or run training first, the model may fail or use outdated data, and `metrics.json` may not reflect the correct results.
+The confusion matrix plot will show the counts of true positives, true negatives, false positives, and false negatives, providing insight into the model's performance.
+
+<div class='img-center'>
+
+![](/img/docs/confusion_matrix.png)
+
+</div>
+
+The model might be using a prediction threshold that is too high, causing it to be conservative in making positive predictions. Lowering the threshold can increase recall but may decrease precision.
+
+
+### Setup Model Training using CML
+
+In this step, we will use CML GitHub Action to train a Random Forest Classifier to predict rainfall. CML is a GitHub Action that abstracts generating reports for ML experiments.
+
+The training will trigger when you open a PR against the main branch. You'll continue working with the weather dataset; the preprocess_dataset.py file contains helper functions to pre-process the dataset as before.
+
+The output from running train.py is a metrics.json file containing model metrics, and confusion_matrix.png file containing a plot of the confusion matrix.
+
+```yaml
+name: model-training
+
+on:
+  pull_request:
+    branches: main
+
+permissions: write-all
+
+jobs:
+  train_and_report_eval_performance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v3
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      # Setup CML GitHub Action
+      - name: Setup CML
+        uses: iterative/setup-cml@v1
+          
+      - name: Train model
+        run: |
+          python3 preprocess_dataset.py
+          python3 train.py
+
+      - name: Write CML report
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Add metrics data to markdown
+          cat metrics.json >> model_eval_report.md
+          
+          # Add confusion matrix plot to markdown
+          echo "![confusion matrix plot](./confusion_matrix.png)" >> model_eval_report.md
+
+          # Create comment from markdown report
+          cml comment create model_eval_report.md
+```
+
+The command updates the previous comment instead of creating a new one each time. This keeps the pull request clean and organized, with only one comment showing the latest results.
