@@ -6,14 +6,12 @@ This project demonstrates how to integrate model training into a CI/CD pipeline 
 - Track model performance automatically
 - Share results directly in GitHub
 
-This page details the dataset, modeling workflow, and how to set up GitHub Actions with CML for automated training and reporting. 
+This page covers the dataset, modeling workflow, and how to set up GitHub Actions with CML for automated training and reporting. 
 
-To skip to the actul lab, proceed to [Project: GitHub Actions Workflow with CML](#project-github-actions-workflow-with-cml) section.
+To jump straight to the hands-on section, proceed to the [Project Description](#project-description) section.
 
 
 ## Dataset
-
-Download the dataset here: [Weather Dataset]().
 
 We use a weather dataset to predict whether it will rain the next day. It contains records from different locations in Australia and is commonly used for classification tasks.
 
@@ -40,23 +38,32 @@ Each step prepares the data so the model can learn properly and produce reliable
 
 **Note**: This is a basic workflow. In practice, you may need to add more steps like feature engineering or hyperparameter tuning for better performance.
 
-## Preparing the Data
 
-### 1. Target Encoding
+## Modeling Concepts
 
-Target encoding converts categorical values into numbers based on the target.
+### Preparing the Data
 
-- Replace category with average target value
+Before training, the dataset must be transformed into a format suitable for machine learning using the following steps:
+
+- Target encoding for categorical features
+- Imputation for missing values
+- Feature scaling for numerical stability
+
+Categorical features are encoded into numerical values using **target encoding**, where each category is replaced with the average value of the target variable.
+
+- Useful for features with many unique values
+- Avoids creating too many columns
 - Works well for high-cardinality data
-- Avoids large feature expansion
 
 For example, if "Location" is a feature, each location is replaced with the average rain outcome for that location. This keeps the data compact and useful.
 
-### 2. Imputing and Scaling
+Missing values are then handled through **imputation**, where numerical fields are filled using the mean. After that, **feature scaling** is applied to standardize the data so all features have a similar range. This helps improve model performance and stability.
 
-With imputing and scaling, any missing values are filled using mean, then data is scaled to zero mean and unit variance for better model performance.
+- Data is scaled to zero mean and unit variance
+- Prevents features with larger ranges from dominating the model
+- Improves convergence during training
 
-In the example below, `impute_and_scale_data` is a function that handles both steps.
+In practice, these steps are often combined into reusable preprocessing functions:
 
 ```python
 from sklearn.impute import SimpleImputer
@@ -74,14 +81,16 @@ def impute_and_scale_data(X):
 
 This ensures all features are complete and on the same scale before training.
 
-## Training the Model
+
+
+### Training the Model
 
 Finally, the dataset is split into two sets: 
 
 - Training dataset
 - Testing dataset
 
-The model is trained using the training data. We use a Random Forest model for its accuracy and ability to handle various feature types.
+The model is trained on the training data using a Random Forest classifier, which is effective for handling different feature types and reducing overfitting.
 
 In the example below, `X` is features and `y` is the target.
 
@@ -97,10 +106,7 @@ model = RandomForestClassifier()
 model.fit(X_train, y_train)
 ``` 
 
-
-Random Forest is chosen because it is accurate, handles many features well, and is less likely to overfit.
-
-## Evaluating the Model 
+### Evaluating the Model 
 
 To get a comprehensive view of model performance, we report the standard metrics such as accuracy, precision, recall, and F1 score.
 
@@ -109,7 +115,7 @@ To get a comprehensive view of model performance, we report the standard metrics
 - **Recall** shows how many positives were found
 - **F1 score** balances precision and recall
 
-<!-- In the example below, `model`, `X_test`, and `y_test` are used to compute metrics.
+In the example below, `model`, `X_test`, and `y_test` are used to compute metrics.
 
 ```python
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
@@ -129,11 +135,11 @@ Accuracy: 0.85
 Precision: 0.83
 Recall: 0.81
 F1 Score: 0.82
-``` -->
+``` 
 
 These metrics give a complete view of model performance.
 
-## Confusion Matrix
+### Confusion Matrix
 
 In this step, predictions are visualized using a confusion matrix.
 
@@ -141,7 +147,7 @@ In this step, predictions are visualized using a confusion matrix.
 - Helps understand model errors
 - Displays counts of predictions
 
-<!-- In the example below, `y_test` and `y_pred` are used to create the plot.
+In the example below, `y_test` and `y_pred` are used to create the plot.
 
 ```python
 from sklearn.metrics import ConfusionMatrixDisplay
@@ -151,10 +157,9 @@ ConfusionMatrixDisplay.from_predictions(y_test, y_pred)
 plt.show()
 ```
 
-The diagonal shows correct predictions, which helps confirm how well the model performs. -->
+The diagonal represents correct predictions, which makes it easier to assess overall model performance and identify where mistakes occur.
 
-
-## Project: GitHub Actions Workflow with CML
+## Project Description 
 
 Model training is automated using GitHub Actions and runs whenever a pull request is created from a feature branch to main.
 
@@ -168,7 +173,7 @@ We use **Continuous Machine Learning (CML)** to handle training, evaluation, and
 - Generate metrics and visual reports
 - Post results as comments in pull request
 
-CML is an open-source tool that enables CI/CD for machine learning. It provisions the environment, runs the training code, evaluates the model, and shares results automatically in the pull request so changes can be reviewed before merging.
+CML provisions the environment, runs the training code, evaluates the model, and shares results automatically in the pull request so changes can be reviewed before merging.
 
 <div class='img-center'>
 
@@ -187,12 +192,9 @@ on:
 jobs:
   train:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
-
       - uses: iterative/setup-cml@v1
-
       - name: Train model
         run: python train.py
 ```
@@ -268,7 +270,7 @@ Project structure:
 
 ### Create a Python Virtual Environment 
 
-Create a Python virtual environment to manage dependencies for the project. This ensures that the required libraries are installed and isolated from other projects.
+As best practice, create a Python virtual environment to manage dependencies for the project. This ensures that the required libraries are installed and isolated from other projects.
 
 Windows:
 
@@ -293,13 +295,13 @@ pip install -r requirements.txt
 
 ### Data Preprocessing 
 
-Before training the model, we must preprocess the dataset. The `preprocess_dataset.py` script contains helper functions to clean and transform the raw data. This script generates the processed dataset (e.g., `weather.csv`) in the `/processed_dataset` directory, which is required by the training script.
+Before training the model, we must preprocess the dataset. The `preprocess_dataset.py` script contains helper functions to clean and transform the raw data. 
 
 ```bash
 python3 scripts/preprocess_dataset.py
 ```
 
-This will create the processed dataset file in the `/processed_dataset` directory.
+This will create the processed dataset file in the `/processed_dataset` directory. This will be used by the training script to train the model (next step).
 
 ```bash
 processed_dataset/
@@ -309,7 +311,6 @@ processed_dataset/
 ### Train the Classification Model
 
 > **Note:** Always run the preprocessing step before training. If you skip preprocessing or run training first, the model may fail or use outdated data, and `metrics.json` may not reflect the correct results.
-
 
 Once preprocessing is complete and the processed dataset exists, we can train the model using `train.py`. This script loads the processed data, splits it into training and test sets, trains the model, evaluates it, and saves the results.
 
@@ -330,7 +331,7 @@ Output:
 ======================================================
 ```
 
-The script will also generate or update `metrics.json` with the latest evaluation metrics and create a confusion matrix plot (e.g., `confusion_matrix.png`).
+The script will also generates `metrics.json` with the latest evaluation metrics and create a confusion matrix plot (e.g., `confusion_matrix.png`) in the `outputs` directory.
 
 ```bash
 outputs/
@@ -339,7 +340,7 @@ outputs/
 ...
 ```
 
-The confusion matrix plot will show the counts of true positives, true negatives, false positives, and false negatives, providing insight into the model's performance.
+The confusion matrix shows the number of true positives, true negatives, false positives, and false negatives. This helps you better understand how the model is performing.
 
 <div class='img-center'>
 
@@ -347,16 +348,16 @@ The confusion matrix plot will show the counts of true positives, true negatives
 
 </div>
 
-The model might be using a prediction threshold that is too high, causing it to be conservative in making positive predictions. Lowering the threshold can increase recall but may decrease precision.
+In some cases, the model may use a prediction threshold that is too high. This can make it more conservative when predicting positive outcomes. Lowering the threshold can improve recall, but it may reduce precision.
 
 
 ### Setup Model Training using CML
 
-In this step, we will use CML GitHub Action to train a Random Forest Classifier to predict rainfall. CML is a GitHub Action that abstracts generating reports for ML experiments.
+In this step, we will use CML with GitHub Actions to train a Random Forest classifier that predicts rainfall. CML helps automate training, evaluation, and reporting for machine learning workflows.
 
-The training will trigger when you open a PR against the main branch. You'll continue working with the weather dataset; the preprocess_dataset.py file contains helper functions to pre-process the dataset as before.
+Training is triggered when a pull request is opened against the main branch. The workflow uses the same weather dataset, and the `preprocess_dataset.p`y script prepares the data as before.
 
-The output from running train.py is a metrics.json file containing model metrics, and confusion_matrix.png file containing a plot of the confusion matrix.
+After running `train.py`, the process produces a `metrics.json` file with evaluation metrics and a `confusion_matrix.png` file that shows the confusion matrix.
 
 ```yaml
 name: model-training
@@ -402,4 +403,4 @@ jobs:
           cml comment create model_eval_report.md
 ```
 
-The command updates the previous comment instead of creating a new one each time. This keeps the pull request clean and organized, with only one comment showing the latest results.
+Each time the workflow runs, it updates the existing comment instead of creating a new one. This keeps the pull request clean and ensures that only the latest results are shown.
