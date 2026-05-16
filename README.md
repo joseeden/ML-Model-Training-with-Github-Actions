@@ -241,19 +241,19 @@ To follow along with the project, you need:
 To get started, clone the repository to your local machine. This will give you access to the code and files needed for the project.
 
 ```bash
-git clone
+git clone https://github.com/joseeden/ML-Model-Training-with-Github-Actions.git
 ```
 
 Then navigate to the project directory:
 
 ```bash
-cd 010-Model-Training-with-Github-Actions
+cd ML-Model-Training-with-Github-Actions
 ```
 
 Project structure:
 
 ```
-010-Model-Training-with-Github-Actions
+ML-Model-Training-with-Github-Actions
 ├── README.md
 ├── outputs/
 ├── processed_dataset/

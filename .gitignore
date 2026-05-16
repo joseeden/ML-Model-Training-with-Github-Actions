@@ -1,2 +1,7 @@
 venv/
 __pycache__
+
+
+output/metrics.json
+
+raw_dataset/*csv
